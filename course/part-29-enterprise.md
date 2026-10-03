@@ -171,16 +171,39 @@ class ShopPlugin implements AppPlugin {
   Map<String, dynamic>? get config => null;
 }
 
-// Placeholder classes
-class EventBus {}
+// Supporting classes
+class EventBus {
+  static final EventBus _instance = EventBus._internal();
+  factory EventBus() => _instance;
+  EventBus._internal();
+  final _controller = StreamController.broadcast();
+  Stream<T> on<T>() => _controller.stream.where((e) => e is T).cast<T>();
+  void fire(dynamic event) => _controller.add(event);
+}
+
 class LogService {
+  void debug(String msg) => print('[DEBUG] $msg');
   void info(String msg) => print('[INFO] $msg');
+  void warning(String msg) => print('[WARN] $msg');
+  void error(String msg, [Object? error]) => print('[ERROR] $msg${error != null ? ': $error' : ''}');
 }
+
 class AnalyticsService {
-  void track(String event, [Map<String, dynamic>? props]) {}
+  void track(String event, [Map<String, dynamic>? props]) {
+    print('[Analytics] $event ${props ?? ''}');
+  }
+  void identify(String userId) => print('[Analytics] identify: $userId');
 }
-class NavigationService {}
-class Route {}
+
+class NavigationService {
+  void navigateTo(String route) => print('[Nav] → $route');
+  void pop() => print('[Nav] ←');
+}
+
+class Route {
+  final String path;
+  const Route(this.path);
+}
 ```
 
 ---
